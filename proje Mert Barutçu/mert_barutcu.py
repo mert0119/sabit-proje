@@ -1,0 +1,110 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+veri = {
+    'Satiş_ID': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    'Ürün': ['Telefon', 'Tişört', 'Çikolata', 'Laptop', 'Pantolon', 'Bisküvi', 'Tablet', 'Ceket', 'Süt', 'Kulaklık', 'Mouse', 'Makarna', 'Şort'],
+    'Kategori': ['Elektronik', 'Giyim', 'Gıda', 'Elektronik', 'Giyim', 'Gıda', 'Elektronik', 'Giyim', 'Gıda', 'Elektronik', 
+                 'Elektronik', 'Gıda', 'Giyim'],
+    'Fiyat': [5000, 300, 20, 25000, 700, 20, 7500, 1000, 24, 1550, 400, 11, 650],
+    'Adet': [5, 15, 30, 3, 8, 24, 7, 13, 20, 10, 16, 25, 12],
+    'Tarih': ['2023-01-05', '2023-01-10', '2023-02-15', '2023-02-20', '2023-03-01', 
+              '2023-03-05', '2023-04-10', '2023-04-15', '2023-05-01', '2023-05-10',
+              '2023-05-15', '2023-05-20', '2023-05-25']
+}
+df = pd.DataFrame(veri)
+df.to_csv('satis_verisi.csv', index=False)
+
+print("Eksik Veriler:", df.isnull().sum())
+df['Tarih'] = pd.to_datetime(df['Tarih'])
+df['Toplam_Tutar'] = df['Fiyat'] * df['Adet']
+
+en_cok_satilan = df.groupby('Ürün')['Adet'].sum().sort_values(ascending=False)
+print("\nEn Çok Satılan Ürünler:\n", en_cok_satilan)
+
+en_az_satilan = df.groupby('Ürün')['Adet'].sum().sort_values(ascending=True)
+print("\nEn Az Satılan Ürünler:\n", en_az_satilan)
+
+kategori_gelir = df.groupby('Kategori')['Toplam_Tutar'].sum().sort_values(ascending=False)
+print("\nKategorilere Göre Toplam Gelir:\n", kategori_gelir)
+
+df['Ay'] = df['Tarih'].dt.to_period('M')
+aylik_satis = df.groupby('Ay')['Toplam_Tutar'].sum()
+print("\nAylık Satış Trendleri:\n", aylik_satis)
+
+en_karli_urun = df.groupby('Ürün')['Toplam_Tutar'].sum().sort_values(ascending=False)
+print("\nEn Kârlı Ürünler:\n", en_karli_urun)
+
+aylik_en_cok_satilan = df.groupby(['Ay', 'Ürün'])['Adet'].sum().reset_index()
+aylik_en_cok_satilan = aylik_en_cok_satilan.loc[aylik_en_cok_satilan.groupby('Ay')['Adet'].idxmax()]  
+print("\nHer Ayda En Çok Satılan Ürün:\n", aylik_en_cok_satilan)
+
+ozet = pd.DataFrame({
+    'Toplam Satış (Adet)': df.groupby('Kategori')['Adet'].sum(),
+    'Toplam Gelir': df.groupby('Kategori')['Toplam_Tutar'].sum()
+}).reset_index()
+print("\nKategori Bazında Özet Tablo:\n", ozet)
+
+plt.rcParams['font.family'] = 'DejaVu Sans' 
+plt.rcParams['axes.titlesize'] = 14
+plt.rcParams['axes.labelsize'] = 12
+
+plt.figure(figsize=(8, 6))
+kategori_gelir.plot(kind='bar', color='blue')
+plt.title('Kategorilere Göre Toplam Gelir')
+plt.xlabel('Kategori')
+plt.ylabel('Toplam Gelir (TL)')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('kategori_gelir.png')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+aylik_satis.plot(kind='line', marker='o', color='red')
+plt.title('Aylık Satış Trendleri')
+plt.xlabel('Ay')
+plt.ylabel('Toplam Gelir (TL)')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('aylik_satis.png')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+en_cok_satilan.head(5).plot(kind='bar', color='green')
+plt.title('En Çok Satılan Ürünler (ilk 5)')
+plt.xlabel('Ürün')
+plt.ylabel('Satılan Adet')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('en_cok_satilan.png')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+en_az_satilan.head(5).plot(kind='bar', color='orange')
+plt.title('En Az Satılan Ürünler (ilk 5)')
+plt.xlabel('Ürün')
+plt.ylabel('Satılan Adet')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('en_az_satilan.png')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.bar(aylik_en_cok_satilan['Ay'].astype(str), aylik_en_cok_satilan['Adet'], color='purple')
+for i, (urun, adet) in enumerate(zip(aylik_en_cok_satilan['Ürün'], aylik_en_cok_satilan['Adet'])):
+    plt.text(i, adet + 0.5, urun, ha='center', va='bottom')
+plt.title('1 Yılda En Çok Satılan Ürün')
+plt.xlabel('Ay')
+plt.ylabel('Satılan Adet')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig('aylik_en_cok_satilan.png')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+plt.pie(kategori_gelir, labels=kategori_gelir.index, autopct='%1.1f%%', colors=['#ff9999', '#66b3ff', '#99ff99'])
+plt.title('Kategorilere Göre Toplam Gelir Dağılımı')
+plt.tight_layout()
+plt.savefig('kategori_gelir_pasta.png')
+plt.show()

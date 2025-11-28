@@ -1,0 +1,14 @@
+Satış_ID,Ürün,Kategori,Fiyat,Adet,Tarih
+1,Telefon,Elektronik,5000,5,2023-01-05
+2,Tişört,Giyim,300,15,2023-01-10
+3,Çikolata,Gıda,20,30,2023-02-15
+4,Laptop,Elektronik,25000,3,2023-02-20
+5,Pantolon,Giyim,700,8,2023-03-01
+6,Bisküvi,Gıda,20,24,2023-03-05
+7,Tablet,Elektronik,7500,7,2023-04-10
+8,Ceket,Giyim,1000,13,2023-04-15
+9,Süt,Gıda,24,20,2023-05-01
+10,Kulaklık,Elektronik,1550,10,2023-05-10
+11,Mouse,Elektronik,400,16,2023-05-15
+12,Makarna,Gıda,11,25,2023-05-20
+13,Şort,Giyim,650,12,2023-05-25
