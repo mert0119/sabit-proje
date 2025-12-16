@@ -108,3 +108,4 @@ plt.title('Kategorilere Göre Toplam Gelir Dağılımı')
 plt.tight_layout()
 plt.savefig('kategori_gelir_pasta.png')
 plt.show()
+
